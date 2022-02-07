@@ -8,7 +8,6 @@ from PPlay import keyboard
 from PPlay import sprite
 from Road import Road
 import random
-import pygame
 # Variáveis ​​Linguisticas. Termos Linguisticos 
 ### Se Antecedente Então Consequente 
 ### Novos objetos Antecedent / Consequent possuem variáveis ​​de universo e número de associação
@@ -73,28 +72,35 @@ n_roads = 5
 road = Road(n_roads, width)
 signal = True
 npeoples = 0
-
 end = False
+fechou = False
+closed_time = 0
+opened_time = 0
 while(not(end)):
     screen.set_background_color([13,13,44])
     new_value += screen.delta_time()
-    if new_value > result:
+    if fechou:
         npeoples = random.randint(0,100)
         aberto_simulator.input['pessoas'] = npeoples
         aberto_simulator.input['veiculos'] = road.car_frequency
         aberto_simulator.compute()
-        signal = not(signal)
-        if(signal):
-            result = float(aberto_simulator.output['tempo'])
-        else:
-            result = 100 - float(aberto_simulator.output['tempo'])
+        road.car_frequency = 0
+        closed_time = float(aberto_simulator.output['tempo'])
+        opened_time = 100 - float(aberto_simulator.output['tempo'])
         new_value = 0
+        fechou = False
+    if signal and new_value > opened_time + closed_time:
+        fechou = True
+        signal = False
+    elif not(signal) and new_value > closed_time:
+        signal = True
+        fechou = False
 
     for i in range(n_roads):
         road.add_car(i)
 
-    screen.draw_text(f"Tempo atual: {new_value:.2f}",10,10, 24, (158,183,252))
-    screen.draw_text(f"Tempo até mudar o sinal: {result:.2f}",10,34, 24, (252,241,173))
+    screen.draw_text(f"Tempo atual: {new_value:.2f}s",10,10, 24, (158,183,252))
+    screen.draw_text(f"Duração do sinal aberto: {opened_time:.2f} | Duração do sinal fechado: {closed_time:.2f} ",10,34, 24, (252,241,173))
     screen.draw_text(f"Veículos na tela: {road.n_cars} | Vazão de veículos: {road.car_frequency} | Pessoas: {npeoples} | Sinal: {signal}",10,58, 24, (252,173,173))
     if(inputs.key_pressed('esc')):
         signal = not(signal)
