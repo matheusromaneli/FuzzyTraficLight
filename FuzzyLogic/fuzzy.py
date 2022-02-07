@@ -86,8 +86,8 @@ while(not(end)):
         aberto_simulator.input['veiculos'] = road.car_frequency
         aberto_simulator.compute()
         road.car_frequency = 0
-        closed_time = float(aberto_simulator.output['tempo'])
-        opened_time = 100 - float(aberto_simulator.output['tempo'])
+        closed_time = 100 - float(aberto_simulator.output['tempo'])
+        opened_time = float(aberto_simulator.output['tempo'])
         new_value = 0
         fechou = False
     if signal and new_value > opened_time + closed_time:
