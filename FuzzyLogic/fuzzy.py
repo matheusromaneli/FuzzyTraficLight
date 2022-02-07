@@ -81,7 +81,7 @@ while(not(end)):
     new_value += screen.delta_time()
     if fechou: #Calculo Fuzzy para o tempo do sinal
         aberto_simulator.input['pessoas'] = npeoples  #Enviando o número de pessoas que desejam atravessar para realização do calculo
-        npeoples = random.randint(0,100)
+        npeoples = random.randint(0,50)
 
         aberto_simulator.input['veiculos'] = road.car_frequency #Enviando o fluxo de carros para realização do calculo
         aberto_simulator.compute() #Realizando a fuzzyficação
