@@ -68,23 +68,23 @@ sinal_fechado = sprite.Sprite('src/semaforo_fechado.png')
 sinal_fechado.set_position(600, 200 - sinal_fechado.height)
 
 new_value = 0
-n_roads = 5
-road = Road(n_roads, width)
-signal = True
-npeoples = 0
-end = False
-fechou = False
-closed_time = 0
-opened_time = 0
+n_roads = 5 #Numero de rodovias
+road = Road(n_roads, width) #Chamada da classe rodovias
+signal = True #Estado do sinal
+npeoples = 0 #Numero de pessoas querendo atravessar
+end = False #Controle do termino da simulação
+fechou = False #Controle do sinal
+closed_time = 0 #Tempo que deverá ficar fechado
+opened_time = 0 #Tempo que deverá ficar aberto
 while(not(end)):
     screen.set_background_color([13,13,44])
     new_value += screen.delta_time()
-    if fechou:
-        aberto_simulator.input['pessoas'] = npeoples
+    if fechou: #Calculo Fuzzy para o tempo do sinal
+        aberto_simulator.input['pessoas'] = npeoples  #Enviando o número de pessoas que desejam atravessar para realização do calculo
         npeoples = random.randint(0,100)
 
-        aberto_simulator.input['veiculos'] = road.car_frequency
-        aberto_simulator.compute()
+        aberto_simulator.input['veiculos'] = road.car_frequency #Enviando o fluxo de carros para realização do calculo
+        aberto_simulator.compute() #Realizando a fuzzyficação
         road.car_frequency = 0
         closed_time = 100 - float(aberto_simulator.output['tempo'])
         opened_time = float(aberto_simulator.output['tempo'])
