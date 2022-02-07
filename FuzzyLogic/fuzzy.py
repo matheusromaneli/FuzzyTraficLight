@@ -80,8 +80,9 @@ while(not(end)):
     screen.set_background_color([13,13,44])
     new_value += screen.delta_time()
     if fechou:
-        npeoples = random.randint(0,100)
         aberto_simulator.input['pessoas'] = npeoples
+        npeoples = random.randint(0,100)
+
         aberto_simulator.input['veiculos'] = road.car_frequency
         aberto_simulator.compute()
         road.car_frequency = 0
