@@ -8,6 +8,7 @@ class Road():
         self.initial_y = 200
         self.dy = 45 #size sprite of carro
         self.n_roads = n
+        self.car_frequency = 0
         self.n_cars = 0
         self.roads = {}
         for i in range(n):
@@ -29,6 +30,7 @@ class Road():
                 current_car_pos = car.move(distance_last_car - car.get_pos(), delta_time) + car.image.width
                 if current_car_pos > self.limit:
                     self.roads[road].pop(0)
+                    self.car_frequency += 1
                     self.n_cars -= 1
                     distance_last_car = 99999
                 else:
@@ -41,7 +43,7 @@ class Road():
     def draw(self):
         i = 0
         for road in self.roads:
-            window.Window.get_screen().fill((100,100,100), pygame.Rect(0, self.initial_y + self.dy * i, self.limit, self.dy-3))
+            window.Window.get_screen().fill((50,50,50), pygame.Rect(0, self.initial_y + self.dy * i, self.limit, self.dy-3))
             for car in self.roads[road]:
                 car.draw(self.initial_y + self.dy * i)
             

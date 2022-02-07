@@ -1,12 +1,13 @@
 from PPlay import sprite
 from PPlay import window
+from random import randint
 
 class Car():
 
     def __init__(self, acc):
         self.acc = acc
         self.acceleration = 10
-        self.image = sprite.Sprite('src/carro_40.png')
+        self.image = sprite.Sprite(f'src/carros/{randint(1,6)}.png')
         self.speed = self.image.width/3
         self.image.x = - self.image.width
 
