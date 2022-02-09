@@ -8,11 +8,13 @@ from PPlay import keyboard
 from PPlay import sprite
 from Road import Road
 import random
+import matplotlib as plt
+
 # Variáveis ​​Linguisticas. Termos Linguisticos 
 ### Se Antecedente Então Consequente 
 ### Novos objetos Antecedent / Consequent possuem variáveis ​​de universo e número de associação
 pessoa = ctrl.Antecedent(np.arange(0,50,1), 'pessoas')
-veiculo = ctrl.Antecedent(np.arange(0,100,1), 'veiculos')
+veiculo = ctrl.Antecedent(np.arange(0,200,1), 'veiculos')
 
 aberto = ctrl.Consequent(np.arange(0,100,1), 'tempo')
 # Fuzzificação 
@@ -26,14 +28,14 @@ veiculo['muito baixo'] = fuzz.trapmf(veiculo.universe, [0,0, 5,10])
 veiculo['baixo'] = fuzz.trapmf(veiculo.universe, [5, 10, 15, 25])
 veiculo['medio'] = fuzz.trapmf(veiculo.universe, [15,25, 30,40])
 veiculo['alto'] = fuzz.trapmf(veiculo.universe, [30,40, 50,60])
-veiculo['muito alto'] = fuzz.trapmf(veiculo.universe, [50,60,100,101])
+veiculo['muito alto'] = fuzz.trapmf(veiculo.universe, [50,60,120,200])
 
 ### Uma função de pertinência personalizada pode ser construída de forma interativa com uma API Pythonic
-aberto['Mais Fechado']= fuzz.trimf(aberto.universe, [0,15, 30])
+aberto['Mais Fechado']= fuzz.trapmf(aberto.universe, [0,0,15, 30])
 aberto['Fechado']= fuzz.trimf(aberto.universe, [15,30,45])
 aberto['Equilibrado']= fuzz.trimf(aberto.universe, [30,45,60])
 aberto['Aberto']= fuzz.trimf(aberto.universe, [45,60,75])
-aberto['Mais Aberto'] = fuzz.trimf(aberto.universe, [60,75,100])
+aberto['Mais Aberto'] = fuzz.trapmf(aberto.universe, [60,75,100,100])
 
 # Maquina de Inferência 
 ruleMA  = ctrl.Rule((pessoa['muito baixo'] & (veiculo['medio'] | veiculo['alto'] | veiculo['muito alto']))| (pessoa['baixo'] & (veiculo['alto'] | veiculo['muito alto'])) | (pessoa['medio'] & veiculo['muito alto']), aberto['Mais Aberto'])
@@ -46,16 +48,14 @@ aberto_simulator = ctrl.ControlSystemSimulation(aberto_ctrl)
 
 ### Simulação
 #### Passe entradas para o ControlSystem usando rótulos Antecedent com *** Pythonic API ***
-#Nota: se você gosta de passar muitas entradas de uma só vez, use .inputs (dict_of_data) ``
-
-
-
 # Deffuzificação 
 aberto_simulator.input['pessoas'] = 0
 aberto_simulator.input['veiculos'] = 0
 aberto_simulator.compute()
-result = 0
 
+# pessoa.view(sim = aberto_simulator)
+# veiculo.view(sim = aberto_simulator)
+# aberto.view(sim = aberto_simulator)
 
 width, height = 800,600
 screen = window.Window(width, height)
@@ -67,7 +67,7 @@ sinal_aberto.set_position(600, 200 - sinal_aberto.height)
 sinal_fechado = sprite.Sprite('src/semaforo_fechado.png')
 sinal_fechado.set_position(600, 200 - sinal_fechado.height)
 
-new_value = 0
+current_time = 0
 n_roads = 5 #Numero de rodovias
 road = Road(n_roads, width) #Chamada da classe rodovias
 signal = True #Estado do sinal
@@ -78,7 +78,7 @@ closed_time = 0 #Tempo que deverá ficar fechado
 opened_time = 0 #Tempo que deverá ficar aberto
 while(not(end)):
     screen.set_background_color([13,13,44])
-    new_value += screen.delta_time()
+    current_time += screen.delta_time()
     if fechou: #Calculo Fuzzy para o tempo do sinal
         aberto_simulator.input['pessoas'] = npeoples  #Enviando o número de pessoas que desejam atravessar para realização do calculo
         npeoples = random.randint(0,50)
@@ -88,19 +88,19 @@ while(not(end)):
         road.car_frequency = 0
         closed_time = 100 - float(aberto_simulator.output['tempo'])
         opened_time = float(aberto_simulator.output['tempo'])
-        new_value = 0
+        current_time = 0
         fechou = False
-    if signal and new_value > opened_time + closed_time:
+    if signal and current_time > opened_time + closed_time:
         fechou = True
         signal = False
-    elif not(signal) and new_value > closed_time:
+    elif not(signal) and current_time > closed_time:
         signal = True
         fechou = False
 
     for i in range(n_roads):
         road.add_car(i)
 
-    screen.draw_text(f"Tempo atual: {new_value:.2f}s",10,10, 24, (158,183,252))
+    screen.draw_text(f"Tempo atual: {current_time:.2f}s",10,10, 24, (158,183,252))
     screen.draw_text(f"Duração do sinal aberto: {opened_time:.2f} | Duração do sinal fechado: {closed_time:.2f} ",10,34, 24, (252,241,173))
     screen.draw_text(f"Veículos na tela: {road.n_cars} | Vazão de veículos: {road.car_frequency} | Pessoas: {npeoples} | Sinal: {signal}",10,58, 24, (252,173,173))
     if(inputs.key_pressed('esc')):
