@@ -13,8 +13,8 @@ import matplotlib as plt
 # Variáveis ​​Linguisticas. Termos Linguisticos 
 ### Se Antecedente Então Consequente 
 ### Novos objetos Antecedent / Consequent possuem variáveis ​​de universo e número de associação
-pessoa = ctrl.Antecedent(np.arange(0,50,1), 'pessoas')
-veiculo = ctrl.Antecedent(np.arange(0,200,1), 'veiculos')
+pessoa = ctrl.Antecedent(np.arange(0,60,1), 'pessoas')
+veiculo = ctrl.Antecedent(np.arange(0,100,1), 'veiculos')
 
 aberto = ctrl.Consequent(np.arange(0,100,1), 'tempo')
 # Fuzzificação 
@@ -22,13 +22,13 @@ pessoa['muito baixo'] = fuzz.trapmf(pessoa.universe, [0,  0,  5, 10])
 pessoa['baixo'] = fuzz.trapmf(pessoa.universe, [5, 10, 15, 20])
 pessoa['medio'] = fuzz.trapmf(pessoa.universe, [15, 20, 25, 30])
 pessoa['alto'] = fuzz.trapmf(pessoa.universe, [25, 30, 35, 40])
-pessoa['muito alto'] = fuzz.trapmf(pessoa.universe, [35, 40, 50, 60])
+pessoa['muito alto'] = fuzz.trapmf(pessoa.universe, [35, 40, 60, 60])
 
 veiculo['muito baixo'] = fuzz.trapmf(veiculo.universe, [0,0, 5,10])
 veiculo['baixo'] = fuzz.trapmf(veiculo.universe, [5, 10, 15, 25])
 veiculo['medio'] = fuzz.trapmf(veiculo.universe, [15,25, 30,40])
 veiculo['alto'] = fuzz.trapmf(veiculo.universe, [30,40, 50,60])
-veiculo['muito alto'] = fuzz.trapmf(veiculo.universe, [50,60,120,200])
+veiculo['muito alto'] = fuzz.trapmf(veiculo.universe, [50,60,100,100])
 
 ### Uma função de pertinência personalizada pode ser construída de forma interativa com uma API Pythonic
 aberto['Mais Fechado']= fuzz.trapmf(aberto.universe, [0,0,15, 30])
@@ -48,15 +48,18 @@ aberto_simulator = ctrl.ControlSystemSimulation(aberto_ctrl)
 
 ### Simulação
 #### Passe entradas para o ControlSystem usando rótulos Antecedent com *** Pythonic API ***
-# Deffuzificação 
-aberto_simulator.input['pessoas'] = 0
-aberto_simulator.input['veiculos'] = 0
+# Defuzzificação 
+aberto_simulator.input['pessoas'] = 35
+aberto_simulator.input['veiculos'] = 35
 aberto_simulator.compute()
+
+
+print(aberto_simulator.output['tempo'])
 
 # pessoa.view(sim = aberto_simulator)
 # veiculo.view(sim = aberto_simulator)
 # aberto.view(sim = aberto_simulator)
-
+# input()
 width, height = 800,600
 screen = window.Window(width, height)
 inputs = keyboard.Keyboard()
@@ -68,7 +71,7 @@ sinal_fechado = sprite.Sprite('src/semaforo_fechado.png')
 sinal_fechado.set_position(600, 200 - sinal_fechado.height)
 
 current_time = 0
-n_roads = 5 #Numero de rodovias
+n_roads = 3 #Numero de rodovias
 road = Road(n_roads, width) #Chamada da classe rodovias
 signal = True #Estado do sinal
 npeoples = 0 #Numero de pessoas querendo atravessar
